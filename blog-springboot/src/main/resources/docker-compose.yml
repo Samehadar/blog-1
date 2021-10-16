@@ -1,0 +1,62 @@
+version: '3'
+
+services:
+  gateway_percona:
+    image: percona:8
+    container_name: anime-blog-mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=blog
+      #      - MYSQL_USER=gateway
+      #      - MYSQL_PASSWORD=gateway
+      - TZ=Europe/Moscow
+    ports:
+      - "3306:3306"
+    #command: percona/percona-server --lower_case_table_names=1 --skip-ssl --character-set-server=utf8 --collation-server=utf8_general_ci
+
+  sentinel:
+    image: redis:6.2.6
+    container_name: blog-redis
+    command: ["redis-server", "--requirepass", "redispass"]
+    restart: always
+    ports:
+      - 6379:6379
+      - 26379:26379
+
+
+  rabbitmq:
+    image: rabbitmq:3.9.7
+    container_name: anime-mixer
+#    build:
+#      context: .
+#      dockerfile: Dockerfile.rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  mail:
+    image: bytemark/smtp
+    restart: always
+    environment:
+      RELAY_HOST: smtp.example.com
+      RELAY_PORT: 587
+      RELAY_USERNAME: alice@example.com
+      RELAY_PASSWORD: secretpassword
+
+  #redis:
+  #  image: redis:alpine
+  #  container_name: gateway_redis
+  #  restart: always
+  #  ports:
+  #    - "6379:6379"
+
+#  consul:
+#    image: consul:latest
+#    container_name: consul
+#    restart: always
+#    ports:
+#      - 8500:8500
+#      - 8600:8600/udp
+#    command: ["consul", "agent", "-server", "-ui", "-bind", "0.0.0.0", "-client", "0.0.0.0", "-data-dir", "/consul/data", "-config-dir", "/consul/config", "-bootstrap", "-datacenter", "docker"]
