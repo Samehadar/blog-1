@@ -15,7 +15,7 @@ services:
       - "3306:3306"
     volumes:
       - "./blog-mysql8.sql:/docker-entrypoint-initdb.d/blog-mysql8.sql"
-      - "./data:/var/lib/mysql"
+      - "dbdata:/var/lib/mysql"
       #command: percona/percona-server --lower_case_table_names=1 --skip-ssl --character-set-server=utf8 --collation-server=utf8_general_ci
 
   sentinel:
@@ -63,3 +63,8 @@ services:
 #      - 8500:8500
 #      - 8600:8600/udp
 #    command: ["consul", "agent", "-server", "-ui", "-bind", "0.0.0.0", "-client", "0.0.0.0", "-data-dir", "/consul/data", "-config-dir", "/consul/config", "-bootstrap", "-datacenter", "docker"]
+
+volumes:
+  dbdata:
+    external: true
+    driver: local
