@@ -67,4 +67,3 @@ services:
 volumes:
   dbdata:
     external: true
-    driver: local
